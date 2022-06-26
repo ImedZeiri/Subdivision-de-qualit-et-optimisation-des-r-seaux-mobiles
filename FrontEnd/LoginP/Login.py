@@ -17,14 +17,14 @@ class Login:
         Window.geometry("1141x628")
         Window.minsize(1141, 628)
         Window.maxsize(1141, 628)
-        bg = ImageTk.PhotoImage(file="../Assets/BackGround.png")
+        bg = ImageTk.PhotoImage(file="/Users/macbookpro/desktop/PFE_MOUNA/FrontEnd/Assets/BackGround.png")
         canvas = Canvas(Window, width=700, height=3500)
         canvas.pack(fill=BOTH, expand=True)
         canvas.create_image(0, 0, image=bg, anchor='nw')
 
         def resize_image(e):
             global image, resized, image2
-            image = Image.open("../Assets/BackGround.png")
+            image = Image.open("/Users/macbookpro/desktop/PFE_MOUNA/FrontEnd/Assets/BackGround.png")
             resized = image.resize((e.width, e.height), Image.ANTIALIAS)
             image2 = ImageTk.PhotoImage(resized)
             canvas.create_image(0, 0, image=image2, anchor='nw')
@@ -66,7 +66,7 @@ class Login:
                 RunWindowUser
             except:
                 return False
-        LgImg = PhotoImage(file="../Assets/BTN/BouttonConnexion.png")
+        LgImg = PhotoImage(file="/Users/macbookpro/desktop/PFE_MOUNA/FrontEnd/Assets/BTN/BouttonConnexion.png")
         bConnexin = Button(Window)
         bConnexin.place(relx=0.3, rely=0.690, height=40, width=144)
         bConnexin.configure(activebackground="#ececec")
