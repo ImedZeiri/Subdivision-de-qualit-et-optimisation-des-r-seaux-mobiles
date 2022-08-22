@@ -3,10 +3,7 @@ from BackEnd.Entity.AdminInterface import AdminInterface
 
 class Db_Connexion:
     def Create_DataBase(self):
-        #Admin =AdminInterface ("mouna1@gmail.com","mouna","chmengui","admin")
-        #Admin.TestAdminExisted()
-        #print(Admin.id)
-        conn = sqlite3.connect('../DB_Intializer/DataBase.db')
+        conn = sqlite3.connect("DataBase.db")
         c = conn.cursor()
         #creation de tous les classes
         c.execute("CREATE TABLE IF NOT EXISTS User (Email TEXT,FirstName TEXT,LastName TEXT, Password TEXT,Role TEXT )")
