@@ -1,14 +1,18 @@
 import time
-from tkinter import *
-from PIL import ImageTk, Image
-from tkinter import ttk
-import sqlite3
-
+from PIL import Image
 from PIL import ImageTk
-
-
+import tkinter as tk
+from tkinter.messagebox import showinfo
+from tkinter import *
+from tkinter import ttk
+from tkinter import messagebox
+from BackEnd.Services.TechnicienService import *
+from BackEnd.Services.IngineerService import *
 class Manager:
     def main_Manager():
+        dbTech = TechnicienService("/Users/macbookpro/Desktop/PFE_MOUNA/BackEnd/DB_Intializer/DataBase.db")
+        dbIng = IngineerService("/Users/macbookpro/Desktop/PFE_MOUNA/BackEnd/DB_Intializer/DataBase.db")
+
         Window = Tk()
         Window.title("Admin Pannel")
         Window.geometry("1431x728")
@@ -27,7 +31,7 @@ class Manager:
             resized = image.resize((e.width, e.height), Image.ANTIALIAS)
             image2 = ImageTk.PhotoImage(resized)
             canvas.create_image(0, 0, image=image2, anchor='nw')
-        Window.bind("<Configure>", resize_image)
+        Window.bind("<Configure>")
 
         def Home_Function():
             Frame1 = Frame(Window)
@@ -38,8 +42,8 @@ class Manager:
             Frame1.configure(background="white")
 
 
-        def GSM_Function():
-            print("GSM Works")
+        def Tech_Function():
+            print("Tech Works")
             Frame1 = Frame(Window)
             Frame1.place(relx=0.3, rely=0.125, relheight=0.81, relwidth=0.6558)
             Frame1.configure(relief='solid')
@@ -47,124 +51,331 @@ class Manager:
             Frame1.configure(relief="solid")
             Frame1.configure(background="white")
 
-            Label2 = Label(Frame1)
-            Label2.place(relx=0.05, rely=0.198, height=21, width=100)
-            Label2.configure(background="white")
-            Label2.configure(disabledforeground="#a3a3a3")
-            Label2.configure(foreground="#000000")
-            Label2.configure(text='''GSM :''', anchor=W)
+
+            name = StringVar()
+            age = StringVar()
+            gender = StringVar()
+            mail = StringVar()
+            Role = StringVar()
+            password = StringVar()
+
+            frame1 = Frame(Frame1, padx=20, pady=20, bg="#636e72")
+            frame1.pack(side=TOP, fill=X)
+
+            lblTitle = Label(frame1, bg="#636e72", text="Gestion", font=("times", 16, "bold"), fg="white", pady=10)
+            lblTitle.grid(columnspan=2)
+
+            lblName = Label(frame1, text="Nom ", bg="#636e72", fg="white", font=("times", 16, "bold"), pady=10)
+            lblName.grid(row=1, column=0)
+
+            txtName = Entry(frame1, textvariable=name, font=("times", 16), width=43)
+            txtName.grid(row=1, column=1)
+
+            lblAge = Label(frame1, text="Age", bg="#636e72", fg="white", font=("times", 16, "bold"), pady=10)
+            lblAge.grid(row=2, column=0)
+
+            txtAge = Entry(frame1, font=("times", 16), textvariable=age, width=43)
+            txtAge.grid(row=2, column=1)
+
+            lblgen = Label(frame1, text="Genre", bg="#636e72", fg="white", font=("times", 16, "bold"), pady=10)
+            lblgen.grid(row=3, column=0)
+
+            cb = ttk.Combobox(frame1, width=41, textvariable=gender, state="readonly", font=("times", 16))
+            cb['values'] = ("Male", "Female", "Others")
+            cb.grid(row=3, column=1)
+
+            lblAdd = Label(frame1, text="Mail", bg="#636e72", fg="white", font=("times", 16, "bold"), pady=10)
+            lblAdd.grid(row=4, column=0)
+
+            txtAdd = Entry(frame1, font=("times", 16), width=43, textvariable=mail)
+            txtAdd.grid(row=4, column=1)
+
+            lblCon = Label(frame1, text="Role", bg="#636e72", fg="white", font=("times", 16, "bold"), pady=10)
+            lblCon.grid(row=5, column=0)
+
+            txtCon = Entry(frame1, font=("times", 16), textvariable=Role, width=43)
+            txtCon.grid(row=5, column=1)
+            txtCon.insert(0, "Technicien")
+            txtCon.configure(state=DISABLED)
+
+
+            lblMail = Label(frame1, text="password", bg="#636e72", fg="white", font=("times", 16, "bold"), pady=10)
+            lblMail.grid(row=6, column=0)
+
+            txtMail = Entry(frame1, font=("times", 16), textvariable=password, width=43)
+            txtMail.grid(row=6, column=1)
+
+            btn_frame = Frame(frame1, bg="#2d3436")
+            btn_frame.grid(row=7, column=1, columnspan=4)
+
+            def fetchData():
+                table.delete(*table.get_children())
+                count = 0
+                for row in dbTech.fetch_record():
+                    count += 1
+                    table.insert("", END, values=(count, row[0], row[1], row[2], row[3], row[4], row[5], row[6]))
+
+            def addData():
+                if txtName.get() == "" or txtAge.get() == "" or txtAdd.get() == "" or txtCon.get() == "" or txtMail.get() == "":
+                    messagebox.showinfo("Message", "Please Fill All Records")
+                else:
+                    dbTech.insert(txtName.get(), txtAge.get(), cb.get(), txtAdd.get(), txtMail.get())
+                    fetchData()
+                    clearData()
+                    messagebox.showinfo("Message", "Record Insert Successfully")
+
+            def getrecord(event):
+                srow = table.focus()
+                data = table.item(srow)
+                global row
+                row = data['values']
+                name.set(row[2])
+                age.set(row[3])
+                gender.set(row[4])
+                Role.set(row[6])
+                mail.set(row[7])
+                password.set(row[5])
+
+            def updateData():
+                if txtName.get() == "" or txtAge.get() == "" or txtAdd.get() == "" or cb.get() == "" or txtCon.get() == "" or txtMail.get() == "":
+                    messagebox.showinfo("Message", "Please Fill All Records")
+                else:
+                    dbTech.update_record(txtName.get(), txtAge.get(), cb.get(), txtAdd.get(), txtMail.get(),
+                                     (row[1]))
+                    fetchData()
+                    clearData()
+                    messagebox.showinfo("Message", "Record Update Successfully")
+
+            def deleteData():
+                dbTech.remove_record(row[1])
+                fetchData()
+                clearData()
+                messagebox.showinfo("Message", "Record Delete Successfully")
+
+            def clearData():
+                name.set("")
+                age.set("")
+                gender.set("")
+                Role.set("")
+                mail.set("")
+                password.set("")
+
+            btnSub = Button(btn_frame, text="Insert", bg="#01a3a4", fg="white", width=6, padx=20, pady=5,
+                            font=("times", 16, "bold"), command=addData)
+            btnSub.grid(row=0, column=0)
+
+            btnUp = Button(btn_frame, text="Update", bg="#F79F1F", fg="white", width=6, padx=20, pady=5,
+                           font=("times", 16, "bold"), command=updateData)
+            btnUp.grid(row=0, column=1)
+
+            btnDel = Button(btn_frame, text="Delete", bg="#ee5253", fg="white", width=6, padx=20, pady=5,
+                            font=("times", 16, "bold"), command=deleteData)
+            btnDel.grid(row=0, column=2)
+
+            btnClr = Button(btn_frame, text="Clear", bg="#1289A7", fg="white", width=6, padx=20, pady=5,
+                            font=("times", 16, "bold"), command=clearData)
+            btnClr.grid(row=0, column=3)
+
+            myFrame = Frame(Frame1)
+            myFrame.place(x=0, y=425, width=1920, height=500)
+
+            style = ttk.Style()
+            style.configure("Treeview", font=("times", 15), rowheight=38)
+            style.configure("Treeview.Heading", font=("times", 16, "bold"))
+
+            table = ttk.Treeview(myFrame, columns=(0, 1, 2, 3, 4, 5, 6, 7))
+
+            table.column("0", anchor=CENTER,width=70)
+            table.column("1", stretch=NO, width=70)
+            table.column("3", anchor=CENTER,width=70)
+            table.column("6", anchor=CENTER,width=70)
+
+            table.heading("0", text="S.NO")
+            table.heading("1", text="ID")
+            table.heading("2", text="Nom ")
+            table.heading("3", text="AGE")
+            table.heading("4", text="Genre")
+            table.heading("5", text="Adresse")
+            table.heading("6", text="Contact")
+            table.heading("7", text="Email")
+            table["show"] = 'headings'
+            table.bind("<ButtonRelease-1>", getrecord)
+            table.pack(fill=X)
+
+            fetchData()
 
         def Ing_Function():
+            print("Ing Works")
             Frame1 = Frame(Window)
             Frame1.place(relx=0.3, rely=0.125, relheight=0.81, relwidth=0.6558)
             Frame1.configure(relief='solid')
             Frame1.configure(borderwidth="0")
+            Frame1.configure(relief="solid")
             Frame1.configure(background="white")
 
-            notebook = ttk.Notebook(Frame1)
-            notebook.configure
-            notebook.place(relx=0.01, rely=0.0125, relheight=0.81, relwidth=0.6558)
-            frame1 = Frame(notebook, width=400, height=280)
-            frame1.configure(background="white")
-            frame2 = Frame(notebook, width=400, height=280)
-            frame2.configure(background="white")
-            frame1.pack(fill='both', expand=True)
-            frame2.pack(fill='both', expand=True)
-            notebook.add(frame1, text='Ajouter Ingenieur')
-            notebook.add(frame2, text='Voir list')
-            print("Ing_Function Works")
 
-            # Label & Entry for name
-            lblName = Label(frame1, text="Email : ")
-            lblName.place(x=10, y=10)
-            entryEmail = Entry(frame1)
-            entryEmail.place(x=100, y=10, width=200)
+            name = StringVar()
+            age = StringVar()
+            gender = StringVar()
+            mail = StringVar()
+            Role = StringVar()
+            password = StringVar()
 
+            frame1 = Frame(Frame1, padx=20, pady=20, bg="#636e72")
+            frame1.pack(side=TOP, fill=X)
 
-            # Label & Entry Email
-            lblEmail = Label(frame1, text="Nom")
-            lblEmail.place(x=10, y=40)
-            entryNom = Entry(frame1)
-            entryNom.place(x=100, y=40, width=200)
+            lblTitle = Label(frame1, bg="#636e72", text="Gestion", font=("times", 16, "bold"), fg="white", pady=10)
+            lblTitle.grid(columnspan=2)
 
-            # Label & Entry Age
-            lblAge = Label(frame1, text="Prenom")
-            lblAge.place(x=10, y=70)
-            entryPrenom = Entry(frame1)
-            entryPrenom.place(x=100, y=70, width=200)
+            lblName = Label(frame1, text="Nom ", bg="#636e72", fg="white", font=("times", 16, "bold"), pady=10)
+            lblName.grid(row=1, column=0)
 
-            # Label & Entry Age
-            lblAge = Label(frame1, text="Mot de passe")
-            lblAge.place(x=10, y=100)
-            entryMdp = Entry(frame1)
-            entryMdp.place(x=100, y=100, width=200)
+            txtName = Entry(frame1, textvariable=name, font=("times", 16), width=43)
+            txtName.grid(row=1, column=1)
 
-            def RecupererData():
-                DataIngineer = [entryEmail.get(),entryNom.get(),entryPrenom.get(),entryMdp.get(),"Ingineer"]
-                from BackEnd.DB_Intializer.Db import Db_Connexion
-                from BackEnd.Services.Add_Service import Add
-                Add.Add_Ing(DataIngineer)
+            lblAge = Label(frame1, text="Age", bg="#636e72", fg="white", font=("times", 16, "bold"), pady=10)
+            lblAge.grid(row=2, column=0)
 
-            btnValidate = Button(frame1, text="Valider",command=RecupererData)
-            btnValidate.place(x=100, y=130, width=200, height=25)
+            txtAge = Entry(frame1, font=("times", 16), textvariable=age, width=43)
+            txtAge.grid(row=2, column=1)
 
-        def Tech_Function():
-            Frame1 = Frame(Window)
-            Frame1.place(relx=0.3, rely=0.125, relheight=0.81, relwidth=0.6558)
-            Frame1.configure(relief='solid')
-            Frame1.configure(borderwidth="0")
-            Frame1.configure(background="white")
+            lblgen = Label(frame1, text="Genre", bg="#636e72", fg="white", font=("times", 16, "bold"), pady=10)
+            lblgen.grid(row=3, column=0)
 
-            notebook = ttk.Notebook(Frame1)
-            notebook.configure
-            notebook.place(relx=0.01, rely=0.0125, relheight=0.81, relwidth=0.6558)
-            frame1 = Frame(notebook, width=400, height=280)
-            frame1.configure(background="white")
-            frame2 = Frame(notebook, width=400, height=280)
-            frame2.configure(background="white")
-            frame1.pack(fill='both', expand=True)
-            frame2.pack(fill='both', expand=True)
-            notebook.add(frame1, text='Ajouter Ingenieur')
-            notebook.add(frame2, text='Voir list')
-            print("Tech_Function Works")
+            cb = ttk.Combobox(frame1, width=41, textvariable=gender, state="readonly", font=("times", 16))
+            cb['values'] = ("Male", "Female", "Others")
+            cb.grid(row=3, column=1)
 
-            # Label & Entry for name
-            lblName = Label(frame1, text="Email : ")
-            lblName.place(x=10, y=10)
-            entryEmail = Entry(frame1)
-            entryEmail.place(x=100, y=10, width=200)
+            lblAdd = Label(frame1, text="mail", bg="#636e72", fg="white", font=("times", 16, "bold"), pady=10)
+            lblAdd.grid(row=4, column=0)
+
+            txtAdd = Entry(frame1, font=("times", 16), width=43, textvariable=mail)
+            txtAdd.grid(row=4, column=1)
+
+            lblCon = Label(frame1, text="Role", bg="#636e72", fg="white", font=("times", 16, "bold"), pady=10)
+            lblCon.grid(row=5, column=0)
+
+            txtCon = Entry(frame1, font=("times", 16), textvariable=Role, width=43)
+            txtCon.grid(row=5, column=1)
+            txtCon.insert(0, "Ingineer")
+            txtCon.configure(state=DISABLED)
 
 
-            # Label & Entry Email
-            lblEmail = Label(frame1, text="Nom")
-            lblEmail.place(x=10, y=40)
-            entryNom = Entry(frame1)
-            entryNom.place(x=100, y=40, width=200)
+            lblMail = Label(frame1, text="mot de passe", bg="#636e72", fg="white", font=("times", 16, "bold"), pady=10)
+            lblMail.grid(row=6, column=0)
 
-            # Label & Entry Age
-            lblAge = Label(frame1, text="Prenom")
-            lblAge.place(x=10, y=70)
-            entryPrenom = Entry(frame1)
-            entryPrenom.place(x=100, y=70, width=200)
+            txtMail = Entry(frame1, font=("times", 16), textvariable=password, width=43)
+            txtMail.grid(row=6, column=1)
 
-            # Label & Entry Age
-            lblAge = Label(frame1, text="Mot de passe")
-            lblAge.place(x=10, y=100)
-            entryMdp = Entry(frame1)
-            entryMdp.place(x=100, y=100, width=200)
+            btn_frame = Frame(frame1, bg="#2d3436")
+            btn_frame.grid(row=7, column=1, columnspan=4)
 
-            def RecupererData():
-                DataTech = [entryEmail.get(),entryNom.get(),entryPrenom.get(),entryMdp.get(),"Technicien"]
-                from BackEnd.DB_Intializer.Db import Db_Connexion
-                from BackEnd.Services.Add_Service import Add
-                Add.Add_Tech(DataTech)
+            def fetchData():
+                table.delete(*table.get_children())
+                count = 0
+                for row in dbIng.fetch_record():
+                    count += 1
+                    table.insert("", END, values=(count, row[0], row[1], row[2], row[3], row[4], row[5], row[6]))
 
-            btnValidate = Button(frame1, text="Valider",command=RecupererData)
-            btnValidate.place(x=100, y=130, width=200, height=25)
+            def addData():
+                if txtName.get() == "" or txtAge.get() == "" or txtAdd.get() == "" or txtCon.get() == "" or txtMail.get() == "":
+                    messagebox.showinfo("Message", "Please Fill All Records")
+                else:
+                    dbIng.insert(txtName.get(), txtAge.get(), cb.get(), txtAdd.get(), txtMail.get())
+                    fetchData()
+                    clearData()
+                    messagebox.showinfo("Message", "Record Insert Successfully")
+
+            def getrecord(event):
+                srow = table.focus()
+                data = table.item(srow)
+                global row
+                row = data['values']
+                name.set(row[2])
+                age.set(row[3])
+                gender.set(row[4])
+                Role.set(row[6])
+                password.set(row[7])
+                mail.set(row[5])
+
+            def updateData():
+                if txtName.get() == "" or txtAge.get() == "" or txtAdd.get() == "" or cb.get() == "" or txtCon.get() == "" or txtMail.get() == "":
+                    messagebox.showinfo("Message", "Please Fill All Records")
+                else:
+                    dbIng.update_record(txtName.get(), txtAge.get(), cb.get(), txtAdd.get(), txtMail.get(),
+                                     (row[1]))
+                    fetchData()
+                    clearData()
+                    messagebox.showinfo("Message", "Record Update Successfully")
+
+            def deleteData():
+                dbIng.remove_record(row[1])
+                fetchData()
+                clearData()
+                messagebox.showinfo("Message", "Record Delete Successfully")
+
+            def clearData():
+                name.set("")
+                age.set("")
+                gender.set("")
+                Role.set("")
+                password.set("")
+                mail.set("")
+
+            btnSub = Button(btn_frame, text="Insert", bg="#01a3a4", fg="white", width=6, padx=20, pady=5,
+                            font=("times", 16, "bold"), command=addData)
+            btnSub.grid(row=0, column=0)
+
+            btnUp = Button(btn_frame, text="Update", bg="#F79F1F", fg="white", width=6, padx=20, pady=5,
+                           font=("times", 16, "bold"), command=updateData)
+            btnUp.grid(row=0, column=1)
+
+            btnDel = Button(btn_frame, text="Delete", bg="#ee5253", fg="white", width=6, padx=20, pady=5,
+                            font=("times", 16, "bold"), command=deleteData)
+            btnDel.grid(row=0, column=2)
+
+            btnClr = Button(btn_frame, text="Clear", bg="#1289A7", fg="white", width=6, padx=20, pady=5,
+                            font=("times", 16, "bold"), command=clearData)
+            btnClr.grid(row=0, column=3)
+
+            myFrame = Frame(Frame1)
+            myFrame.place(x=0, y=425, width=1920, height=500)
+
+            style = ttk.Style()
+            style.configure("Treeview", font=("times", 15), rowheight=38)
+            style.configure("Treeview.Heading", font=("times", 16, "bold"))
+
+            table = ttk.Treeview(myFrame, columns=(0, 1, 2, 3, 4, 5, 6, 7))
+
+            table.column("0", anchor=CENTER,width=70)
+            table.column("1", stretch=NO, width=70)
+            table.column("3", anchor=CENTER,width=70)
+            table.column("6", anchor=CENTER,width=70)
+
+            table.heading("0", text="S.NO")
+            table.heading("1", text="ID")
+            table.heading("2", text="Nom ")
+            table.heading("3", text="AGE")
+            table.heading("4", text="Genre")
+            table.heading("5", text="mail")
+            table.heading("6", text="Contact")
+            table.heading("7", text="password")
+            table["show"] = 'headings'
+            table.bind("<ButtonRelease-1>", getrecord)
+            table.pack(fill=X)
+
+            fetchData()
+
+        def GSM_Function():
+            print("hydvdhfj")
+
+
+
+
 
 
         def Sc_Function():
-            print("Sc_Function Works")
+            print("asjzdhfads")
 
         def MeTst_Function():
             print("MeTst_Function Works")

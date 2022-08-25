@@ -6,8 +6,14 @@ class Db_Connexion:
         conn = sqlite3.connect("DataBase.db")
         c = conn.cursor()
         #creation de tous les classes
-        c.execute("CREATE TABLE IF NOT EXISTS User (Email TEXT,FirstName TEXT,LastName TEXT, Password TEXT,Role TEXT )")
-        c.execute("CREATE TABLE IF NOT EXISTS Test (Email TEXT,FirstName TEXT,LastName TEXT, Password TEXT,Role TEXT )")
+        c.execute("CREATE TABLE IF NOT EXISTS User (pid INTEGER PRIMARY KEY,"
+                  "name TEXT NOT NULL,"
+                  "age TEXT NOT NULL,"
+                  "gender TEXT NOT NULL,"
+                  "mail TEXT NOT NULL,"
+                  "Role TEXT NOT NULL,"
+                  "password TEXT NOT NULL  "
+                  ")")
         c.execute("CREATE TABLE IF NOT EXISTS DirectionRegionale (ID int,tel TEXT,nom TEXT, localisation TEXT,tache TEXT )")
 
         print("Data Base Created succefully !!")
