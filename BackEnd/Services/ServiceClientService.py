@@ -1,6 +1,6 @@
 import sqlite3
 
-class IngineerService:
+class ServiceClientService:
     def __init__(self,db):
         self.con = sqlite3.connect(db)
         self.c=self.con.cursor()
@@ -18,7 +18,7 @@ class IngineerService:
         self.con.commit()
 
     def insert(self,name,age,gender,mail,password):
-        Role="Ingineer"
+        Role="Client_Service"
         sql="""
             insert into User values(NULL,?,?,?,?,?,?)
         """
@@ -26,12 +26,12 @@ class IngineerService:
         self.con.commit()
 
     def fetch_record(self):
-        self.c.execute("SELECT DISTINCT * FROM User where (Role Like 'Ingineer')")
+        self.c.execute("SELECT DISTINCT * FROM User where (Role Like 'Client_Service')")
         data = self.c.fetchall()
         return data
 
     def update_record(self,name,age,gender,mail,password,pid):
-        Role="Ingineer"
+        Role="Client_Service"
         sql="""
             update User set name=?,age=?,gender=?,mail=?,Role=?,password=? where pid=?
         """
