@@ -29,8 +29,9 @@ class UserRole:
             Ingineer.main()
 
         def Manager():
-            from FrontEnd.Project_Manager.Manager_FE import Manager
-            Manager.main_Manager()
+            from FrontEnd.Project_Manager.Manager_FE import App
+            app = App()
+            app.mainloop()
 
         def Technicien():
             from FrontEnd.Technicien.Technicien_FE import Technicien

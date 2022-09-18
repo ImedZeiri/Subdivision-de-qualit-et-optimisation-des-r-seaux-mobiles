@@ -1,6 +1,7 @@
 import sqlite3
 from tkinter import *
 from tkinter import ttk
+import customtkinter
 
 
 class Client_Service:
@@ -27,14 +28,14 @@ class Client_Service:
             lbl_text = Label(TopViewForm, text="Bienvenue chez interface service client", font=('verdana', 18), width=600,
                              bg="#1C2833", fg="white")
             lbl_text.pack(fill=X)
-            lbl_txtsearch = Label(LeftViewForm, text="Search", font=('verdana', 15))
+            lbl_txtsearch = Label(LeftViewForm, text="Search")
             lbl_txtsearch.pack(side=TOP, anchor=W)
 
-            search = Entry(LeftViewForm, textvariable=SEARCH, font=('verdana', 15), width=10)
+            search = customtkinter.CTkEntry(LeftViewForm, textvariable=SEARCH, width=10)
             search.pack(side=TOP, padx=10, fill=X)
-            btn_search = Button(LeftViewForm, text="Search", command=SearchRecord)
+            btn_search = customtkinter.CTkButton(LeftViewForm, text="Search", command=SearchRecord)
             btn_search.pack(side=TOP, padx=10, pady=10, fill=X)
-            btn_search = Button(LeftViewForm, text="View All", command=DisplayData)
+            btn_search = customtkinter.CTkButton(LeftViewForm, text="View All", command=DisplayData)
             btn_search.pack(side=TOP, padx=10, pady=10, fill=X)
 
             # setting scrollbar

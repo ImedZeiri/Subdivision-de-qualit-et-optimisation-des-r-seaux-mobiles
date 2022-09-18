@@ -3,6 +3,8 @@ from tkinter import *
 from PIL import ImageTk, Image
 from tkinter import ttk
 import sqlite3
+import customtkinter
+
 
 from PIL import ImageTk
 
@@ -30,7 +32,7 @@ class Login:
             canvas.create_image(0, 0, image=image2, anchor='nw')
         Window.bind("<Configure>", resize_image)
 
-        EntryEmail = Entry(Window)
+        EntryEmail = customtkinter.CTkEntry(Window)
         EntryEmail.place(relx=0.162, rely=0.464, height=30, relwidth=0.221)
         EntryEmail.configure(background="white")
         EntryEmail.configure(disabledforeground="white", bd=0)
