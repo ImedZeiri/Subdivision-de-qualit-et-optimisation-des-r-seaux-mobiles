@@ -3,7 +3,6 @@ from tkinter import *
 from tkinter import ttk
 import customtkinter
 
-
 class Client_Service:
     def main(self):
         def DisplayForm():

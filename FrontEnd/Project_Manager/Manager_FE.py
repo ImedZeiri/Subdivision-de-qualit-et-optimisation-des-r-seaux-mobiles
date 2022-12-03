@@ -4,8 +4,10 @@ import customtkinter
 from BackEnd.Services.TechnicienService import *
 from BackEnd.Services.IngineerService import *
 from BackEnd.Services.ServiceClientService import *
+from tkintermapview import TkinterMapView
 
-customtkinter.set_appearance_mode("System")  # Modes: "System" (standard), "Dark", "Light"
+
+customtkinter.set_appearance_mode("light")  # Modes: "System" (standard), "Dark", "Light"
 customtkinter.set_default_color_theme("blue")  # Themes: "blue" (standard), "green", "dark-blue"
 
 dbTech = TechnicienService("/Users/macbookpro/Desktop/PFE_MOUNA/BackEnd/DB_Intializer/DataBase.db")
@@ -529,7 +531,13 @@ class App(customtkinter.CTk):
         fetchData()
 
     def GSM_Function(self):
-        print("hydvdhfj")
+        Frame1 = customtkinter.CTkFrame(self)
+        Frame1.place(relx=0.14, rely=0.01, relheight=0.98, relwidth=0.85)
+        map_widget = TkinterMapView(Frame1, width=600, height=400, corner_radius=0)
+        map_widget.pack(fill="both", expand=True)
+        # google normal tile server
+        map_widget.set_tile_server("https://mt0.google.com/vt/lyrs=m&hl=en&x={x}&y={y}&z={z}&s=Ga", max_zoom=22)
+        map_widget.set_address("Kairouan Tunisie", marker=True)
 
     def MeTst_Function(self):
         print("MeTst_Function Works")
@@ -546,8 +554,6 @@ class App(customtkinter.CTk):
         exit_command = messagebox.askyesno("Exit", "Are you sure you want to exit")
         if exit_command > 0:
             self.destroy()
-
-
 
 if __name__ == "__main__":
     app = App()

@@ -2,8 +2,7 @@ from tkinter import *
 from PIL import ImageTk, Image
 from tkinter import ttk
 import tkinter as tk
-
-
+import customtkinter
 
 class Technicien:
     def main(self):
@@ -15,7 +14,6 @@ class Technicien:
         bg = ImageTk.PhotoImage(file="/Users/macbookpro/desktop/PFE_MOUNA/FrontEnd/Assets/BgTech.png")
 
         style = ttk.Style(Window)
-
         # Import the tcl file
         Window.tk.call("source", "/Users/macbookpro/desktop/PFE_MOUNA/FrontEnd/Assets/theme/proxttk.tcl")
 
@@ -130,7 +128,7 @@ class Technicien:
 
 
             Window.BTNValide = ttk.Button(Frame1,style="AccentButton")
-            Window.BTNValide.place(relx=0.09459, rely=0.327, height=30, width=110)
+            Window.BTNValide.place(relx=0.5, rely=0.8, height=30, width=110)
             Window.BTNValide.configure(text="Mesures")
             Window.BTNValide.configure(command=DataRec)
 
@@ -140,14 +138,14 @@ class Technicien:
             print("Works")
 
 
-        Window.BTNMeusure = ttk.Button(Window)
+        Window.BTNMeusure = customtkinter.CTkButton(Window)
         Window.BTNMeusure.place(relx=0.09459, rely=0.327, height=30, width=110)
         Window.BTNMeusure.configure(text="Mesures")
         Window.BTNMeusure.configure(command=Mesure)
 
 
 
-        Window.BTNMaintenance = ttk.Button(Window)
+        Window.BTNMaintenance = customtkinter.CTkButton(Window)
         Window.BTNMaintenance.place(relx=0.09459, rely=0.427, height=30, width=110)
         Window.BTNMaintenance.configure(text="Maintenance")
         Window.BTNMaintenance.configure(command=Maintenance)
