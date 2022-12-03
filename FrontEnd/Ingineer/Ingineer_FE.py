@@ -1,6 +1,5 @@
 from tkinter import *
 
-
 class Ingineer:
     def main(self):
         Window = Tk()

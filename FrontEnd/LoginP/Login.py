@@ -3,6 +3,8 @@ from tkinter import *
 from PIL import ImageTk, Image
 from tkinter import ttk
 import sqlite3
+import customtkinter
+
 
 from PIL import ImageTk
 
@@ -24,13 +26,13 @@ class Login:
 
         def resize_image(e):
             global image, resized, image2
-            image = Image.open("../Assets/BackGround.png")
+            image = Image.open("/Users/macbookpro/desktop/PFE_MOUNA/FrontEnd/Assets/BackGround.png")
             resized = image.resize((e.width, e.height), Image.ANTIALIAS)
             image2 = ImageTk.PhotoImage(resized)
             canvas.create_image(0, 0, image=image2, anchor='nw')
         Window.bind("<Configure>", resize_image)
 
-        EntryEmail = Entry(Window)
+        EntryEmail = customtkinter.CTkEntry(Window)
         EntryEmail.place(relx=0.162, rely=0.464, height=30, relwidth=0.221)
         EntryEmail.configure(background="white")
         EntryEmail.configure(disabledforeground="white", bd=0)
@@ -66,7 +68,7 @@ class Login:
                 RunWindowUser
             except:
                 return False
-        LgImg = PhotoImage(file="../Assets/BTN/BouttonConnexion.png")
+        LgImg = PhotoImage(file="/Users/macbookpro/desktop/PFE_MOUNA/FrontEnd/Assets/BTN/BouttonConnexion.png")
         bConnexin = Button(Window)
         bConnexin.place(relx=0.3, rely=0.690, height=40, width=144)
         bConnexin.configure(activebackground="#ececec")

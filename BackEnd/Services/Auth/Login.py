@@ -12,7 +12,7 @@ class Login_Service:
             conn = sqlite3.connect('/Users/macbookpro/desktop/PFE_MOUNA/BackEnd/DB_Intializer/DataBase.db')
             c = conn.cursor()
             c.execute(
-                " select distinct Role from User where Email ='" + Email_Entry + "' and Password ='" + Password_Entry + "';")
+                " select distinct Role from User where mail ='" + Email_Entry + "' and password ='" + Password_Entry + "';")
             NextScreen = c.fetchone()
             Role = NextScreen[0]
             c.close()
