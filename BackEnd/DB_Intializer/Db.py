@@ -17,6 +17,14 @@ class Db_Connexion:
                       ")")
             c.execute("CREATE TABLE IF NOT EXISTS DirectionRegionale (ID int,tel TEXT,nom TEXT, localisation TEXT,tache TEXT )")
             c.execute("CREATE TABLE IF NOT EXISTS Reclamation (Sub TEXT NOT NULL,Content TEXT NOT NULL)")
+            c.execute("""
+                        CREATE TABLE IF NOT EXISTS reclamations (
+                                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                                    utilisateur TEXT,
+                                    description TEXT,
+                                    statut TEXT
+                    )
+                    """)
             print("Tables created succefully !!")
         except:
             print("error connection !!")

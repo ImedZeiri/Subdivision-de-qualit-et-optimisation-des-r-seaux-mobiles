@@ -24,8 +24,14 @@ class Client:
         Window.bind("<Configure>")
 
 
-        Sub = Entry(Window)
-        Sub.place(relx=0.35, rely=0.05, relheight=0.12, relwidth=0.300)
+        Subject = Entry(Window)
+        Subject.place(relx=0.35, rely=0.05, relheight=0.09, relwidth=0.300)
+
+
+        State = Entry(Window)
+        State.place(relx=0.35, rely=0.2, relheight=0.09, relwidth=0.300)
+
+
 
         Rec_Content = Text(Window)
         Rec_Content.place(relx=0.3, rely=0.4, relheight=0.38, relwidth=0.405)
@@ -64,10 +70,11 @@ class Client:
 
 
         def AddReclamation():
-            sub = Sub.get()
+            sub = Subject.get()
+            state = State.get()
             content = Rec_Content.get("1.0", "end")
             from BackEnd.Services.AddReclamationService import AddReclamationService
-            AddReclamationService.Add_Rec(sub,content)
+            AddReclamationService.Add_Rec(sub,content,state)
             print(sub)
             print(content)
 

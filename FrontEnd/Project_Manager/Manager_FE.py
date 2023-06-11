@@ -540,7 +540,48 @@ class App(customtkinter.CTk):
         map_widget.set_address("Kairouan Tunisie", marker=True)
 
     def MeTst_Function(self):
-        print("MeTst_Function Works")
+        Frame1 = customtkinter.CTkFrame(self)
+        Frame1.place(relx=0.14, rely=0.01, relheight=0.9, relwidth=0.85)
+
+        frame1 = customtkinter.CTkFrame(Frame1, padx=20, pady=20)
+        frame1.pack(side=TOP, fill=X)
+
+        labels = ["La perte de paquets", "La gigue", "La latence", "La bande passante",
+                  "La note d'opinion moyenne",
+                  "Localisation"]
+        entries = []
+
+        for i, label_text in enumerate(labels):
+            label = customtkinter.CTkLabel(frame1, text=label_text)
+            label.grid(row=i, column=0, padx=10, pady=10, sticky="e")
+            entry = customtkinter.CTkEntry(frame1)
+            entry.grid(row=i, column=1, padx=10, pady=10)
+            entries.append(entry)
+
+        measure_button = customtkinter.CTkButton(Frame1, text="Mesurer", command=lambda: self.measure_action(entries))
+        measure_button.place(relx=0.4, rely=0.9, anchor="center")
+
+
+    def measure_action(self, entries):
+        values = [entry.get() for entry in entries]
+
+        # Calculate coverage state based on a threshold value
+        threshold = 10  # Adjust the threshold value as needed
+        coverage_state = "Mauvaise" if float(values[0]) > threshold else "Bonne"
+
+        # Display the values and coverage state in a dialog box
+        messagebox.showinfo("Mesure des paramètres QoS",
+                            f"Perte de paquets: {values[0]}\nGigue: {values[1]}\nLatence: {values[2]}\n"
+                            f"Bande passante: {values[3]}\nÉtat de la couverture: {coverage_state}")
+        self.store_measurement(values)
+
+
+    def store_measurement(self, values):
+        query = """INSERT INTO mesures (perte_paquets, gigue, latence, bande_passante, opinion_moyenne, localisation)
+                           VALUES (?, ?, ?, ?, ?, ?)"""
+        self.db_connection.execute(query, values)
+        self.db_connection.commit()
+        messagebox.showinfo("Mesure des paramètres QoS", "Mesure enregistrée avec succès")
 
     def change_appearance_mode(self, new_appearance_mode: str):
         customtkinter.set_appearance_mode(new_appearance_mode)

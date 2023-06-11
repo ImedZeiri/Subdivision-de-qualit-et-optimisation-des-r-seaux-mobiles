@@ -1,158 +1,189 @@
 from tkinter import *
-from PIL import ImageTk, Image
-from tkinter import ttk
-import tkinter as tk
+from tkinter import messagebox, ttk, simpledialog
+import sqlite3
 import customtkinter
 
-class Technicien:
-    def main(self):
-        Window = Tk()
-        Window.title("Technicien")
-        Window.geometry("1301x728")
-        Window.minsize(1301, 728)
-        Window.maxsize(1301, 728)
-        bg = ImageTk.PhotoImage(file="/Users/macbookpro/desktop/PFE_MOUNA/FrontEnd/Assets/BgTech.png")
+customtkinter.set_appearance_mode("light")
+customtkinter.set_default_color_theme("blue")
 
-        style = ttk.Style(Window)
-        # Import the tcl file
-        Window.tk.call("source", "/Users/macbookpro/desktop/PFE_MOUNA/FrontEnd/Assets/theme/proxttk.tcl")
+class Technicien(customtkinter.CTk):
+    def __init__(self):
+        super().__init__()
+        self.title("Manager Pannel")
+        self.geometry(f"{920}x{500}")
+        self.minsize(1341, 728)
+        self.maxsize(1341, 728)
+        self.protocol("WM_DELETE_WINDOW", self.on_closing)
 
-        # Set the theme with the theme_use method
-        style.theme_use("proxttk")
+        self.db_connection = sqlite3.connect("/Users/macbookpro/Desktop/PFE_MOUNA/BackEnd/DB_Intializer/DataBase.db")
+        self.create_table()
 
-        d = tk.IntVar(value=2)
+        self.grid_columnconfigure(1, weight=1)
+        self.grid_columnconfigure((2, 3), weight=0, minsize=200)
+        self.grid_rowconfigure((0, 1, 2), weight=1)
 
-        canvas = Canvas(Window, width=700, height=3500)
-        canvas.pack(fill=BOTH, expand=True)
-        canvas.create_image(5, 0, image=bg, anchor='nw')
-        canvas.create_image(0, 0, image=bg, anchor='nw')
+        self.sidebar_frame = customtkinter.CTkFrame(self, width=140)
+        self.sidebar_frame.grid(row=0, column=0, rowspan=4, sticky="nsew")
+        self.sidebar_frame.grid_rowconfigure(4, weight=1)
+        self.logo_label = customtkinter.CTkLabel(self.sidebar_frame, text="Dashboard", text_font=("Roboto", -16))
+        self.logo_label.grid(row=0, column=0, padx=20, pady=(20, 10))
 
-        def resize_image(e):
-            global image, resized, image2
-            image = Image.open("/Users/macbookpro/desktop/PFE_MOUNA/FrontEnd/Assets/BgTech.png")
-            resized = image.resize((e.width, e.height), Image.ANTIALIAS)
-            image2 = ImageTk.PhotoImage(resized)
-            canvas.create_image(0, 0, image=image2, anchor='nw')
+        self.sidebar_button_1 = customtkinter.CTkButton(self.sidebar_frame, text="Mesures", command=self.Mesure)
+        self.sidebar_button_1.grid(row=1, column=0, padx=20, pady=10)
 
-        def Destroy():
-            Window.destroy()
-        def Mesure():
-            Frame1 = Frame(Window)
-            Frame1.place(relx=0.3, rely=0.275, relheight=0.51, relwidth=0.4558)
-            Frame1.configure(relief='solid')
-            Frame1.configure(borderwidth="0")
-            Frame1.configure(relief="solid")
-            Frame1.configure(background="white")
+        self.sidebar_button_2 = customtkinter.CTkButton(self.sidebar_frame, text="Réclamations",
+                                                        command=self.Reclamation)
+        self.sidebar_button_2.grid(row=2, column=0, padx=20, pady=10)
 
+        self.appearance_mode_label = customtkinter.CTkLabel(self.sidebar_frame, text="Appearance Mode:", anchor="w")
+        self.appearance_mode_label.grid(row=6, column=0, padx=20, pady=(10, 0))
+        self.appearance_mode_optionmenu = customtkinter.CTkOptionMenu(self.sidebar_frame,
+                                                                       values=["Light", "Dark", "System"],
+                                                                       command=self.change_appearance_mode)
+        self.appearance_mode_optionmenu.grid(row=7, column=0, padx=20, pady=(10, 10))
+        self.scaling_label = customtkinter.CTkLabel(self.sidebar_frame, text="UI Scaling:", anchor="w")
+        self.scaling_label.grid(row=8, column=0, padx=20, pady=(10, 0))
+        self.scaling_optionmenu = customtkinter.CTkOptionMenu(self.sidebar_frame,
+                                                               values=["80%", "90%", "100%", "110%", "120%"],
+                                                               command=self.change_scaling)
+        self.scaling_optionmenu.grid(row=9, column=0, padx=20, pady=(10, 20))
 
-            Labelframe12 = LabelFrame(Frame1)
-            Labelframe12.place(relx=0.012, rely=0.0, relheight=0.099
-                               , relwidth=0.285)
-            Labelframe12.configure(relief='solid')
-            Labelframe12.configure(foreground="black")
-            Labelframe12.configure(text='''QoS (qualité de service)''')
-            Labelframe12.configure(background="white")
+        self.main_button_1 = customtkinter.CTkButton(self, fg_color="red", text="Quitter", border_width=2,
+                                                     command=self.on_closing)
+        self.main_button_1.grid(row=3, column=3, padx=(10, 20), pady=(10, 20), sticky="nsew")
 
-            Label1 = Label(Frame1)
-            Label1.place(relx=0.089, rely=0.203, height=21, width=150)
-            Label1.configure(background="white")
-            Label1.configure(disabledforeground="#a3a3a3")
-            Label1.configure(foreground="#000000")
-            Label1.configure(text='''La perte de paquets''', anchor=W)
+        self.appearance_mode_optionmenu.set("Dark")
+        self.scaling_optionmenu.set("100%")
 
-            Label2 = Label(Frame1)
-            Label2.place(relx=0.089, rely=0.303, height=21, width=150)
-            Label2.configure(background="white")
-            Label2.configure(disabledforeground="#a3a3a3")
-            Label2.configure(foreground="#000000")
-            Label2.configure(text='''La gigue''', anchor=W)
+    def create_table(self):
+        query1 = """CREATE TABLE IF NOT EXISTS mesures (
+                        id INTEGER PRIMARY KEY AUTOINCREMENT,
+                        perte_paquets REAL,
+                        gigue REAL,
+                        latence REAL,
+                        bande_passante REAL,
+                        opinion_moyenne REAL,
+                        localisation TEXT
+                    )"""
+        self.db_connection.execute(query1)
+        self.db_connection.commit()
 
-            Label3 = Label(Frame1)
-            Label3.place(relx=0.089, rely=0.403, height=21, width=150)
-            Label3.configure(background="white")
-            Label3.configure(disabledforeground="#a3a3a3")
-            Label3.configure(foreground="#000000")
-            Label3.configure(text='''La latence''', anchor=W)
+    def Mesure(self):
+        Frame1 = customtkinter.CTkFrame(self)
+        Frame1.place(relx=0.14, rely=0.01, relheight=0.9, relwidth=0.85)
 
-            Label4 = Label(Frame1)
-            Label4.place(relx=0.089, rely=0.503, height=21, width=150)
-            Label4.configure(background="white")
-            Label4.configure(disabledforeground="#a3a3a3")
-            Label4.configure(foreground="#000000")
-            Label4.configure(text='''La bande passante''', anchor=W)
+        frame1 = customtkinter.CTkFrame(Frame1, padx=20, pady=20)
+        frame1.pack(side=TOP, fill=X)
 
-            Label5 = Label(Frame1)
-            Label5.place(relx=0.092, rely=0.603, height=21, width=160)
-            Label5.configure(background="white")
-            Label5.configure(disabledforeground="#a3a3a3")
-            Label5.configure(foreground="#000000")
-            Label5.configure(text='''La note d'opinion moyenne''', anchor=W)
+        labels = ["La perte de paquets", "La gigue", "La latence", "La bande passante",
+                  "La note d'opinion moyenne",
+                  "Localisation"]
+        entries = []
 
-            Label6 = Label(Frame1)
-            Label6.place(relx=0.092, rely=0.703, height=21, width=150)
-            Label6.configure(background="white")
-            Label6.configure(disabledforeground="#a3a3a3")
-            Label6.configure(foreground="#000000")
-            Label6.configure(text='''Localisation ''', anchor=W)
+        for i, label_text in enumerate(labels):
+            label = customtkinter.CTkLabel(frame1, text=label_text)
+            label.grid(row=i, column=0, padx=10, pady=10, sticky="e")
+            entry = customtkinter.CTkEntry(frame1)
+            entry.grid(row=i, column=1, padx=10, pady=10)
+            entries.append(entry)
 
-            Entry1 = ttk.Entry(Frame1)
-            Entry1.place(relx=0.385, rely=0.203, height=20, relwidth=0.198)
+        measure_button = customtkinter.CTkButton(Frame1, text="Mesurer", command=lambda: self.measure_action(entries))
+        measure_button.place(relx=0.4, rely=0.9, anchor="center")
 
-            Entry2 = ttk.Entry(Frame1)
-            Entry2.place(relx=0.385, rely=0.303, height=20, relwidth=0.198)
+    def measure_action(self, entries):
+        values = [entry.get() for entry in entries]
 
-            Entry3 = ttk.Entry(Frame1)
-            Entry3.place(relx=0.385, rely=0.403, height=20, relwidth=0.198)
+        # Calculate coverage state based on a threshold value
+        threshold = 10  # Adjust the threshold value as needed
+        coverage_state = "Mauvaise" if float(values[0]) > threshold else "Bonne"
 
-            Entry4 = ttk.Entry(Frame1)
-            Entry4.place(relx=0.385, rely=0.503, height=20, relwidth=0.198)
+        # Display the values and coverage state in a dialog box
+        messagebox.showinfo("Mesure des paramètres QoS",
+                            f"Perte de paquets: {values[0]}\nGigue: {values[1]}\nLatence: {values[2]}\n"
+                            f"Bande passante: {values[3]}\nÉtat de la couverture: {coverage_state}")
+        self.store_measurement(values)
 
-            Entry5 = ttk.Entry(Frame1)
-            Entry5.place(relx=0.385, rely=0.603, height=20, relwidth=0.191)
+    def store_measurement(self, values):
+        query = """INSERT INTO mesures (perte_paquets, gigue, latence, bande_passante, opinion_moyenne, localisation)
+                   VALUES (?, ?, ?, ?, ?, ?)"""
+        self.db_connection.execute(query, values)
+        self.db_connection.commit()
+        messagebox.showinfo("Mesure des paramètres QoS", "Mesure enregistrée avec succès")
 
-            Entry6 = ttk.Entry(Frame1)
-            Entry6.place(relx=0.385, rely=0.703, height=20, relwidth=0.198)
-
-            def DataRec():
-                ppT = Entry1.get()
-                gigue = Entry2.get()
-                latence = Entry3.get()
-                Bp = Entry4.get()
-                NopMoy = Entry5.get()
-                location = Entry6.get()
-                if int(ppT)>10:
-                    print("red")
-                else:
-                    print("vert")
+    def Reclamation(self):
+        Frame1 = customtkinter.CTkFrame(self)
+        Frame1.place(relx=0.14, rely=0.01, relheight=0.9, relwidth=0.85)
 
 
+        title_label = customtkinter.CTkLabel(Frame1, text="Liste des Réclamations", text_font=("Roboto", -16), pady=20)
+        title_label.grid(row=0, column=0)
 
-            Window.BTNValide = ttk.Button(Frame1,style="AccentButton")
-            Window.BTNValide.place(relx=0.5, rely=0.8, height=30, width=110)
-            Window.BTNValide.configure(text="Mesures")
-            Window.BTNValide.configure(command=DataRec)
+        tree = ttk.Treeview(Frame1, columns=("Utilisateur", "Description", "Statut"), show="headings")
+        tree.grid(row=1, column=0, pady=10)
 
+        tree.heading("Utilisateur", text="Utilisateur")
+        tree.heading("Description", text="Description")
+        tree.heading("Statut", text="Statut")
 
+        add_button = customtkinter.CTkButton(Frame1, text="Ajouter", command=lambda: self.add_complaint(tree))
+        add_button.grid(row=2, column=0, pady=(0, 10))
 
-        def Maintenance():
-            print("Works")
+        delete_button = customtkinter.CTkButton(Frame1, text="Supprimer", command=lambda: self.delete_rows(tree))
+        delete_button.grid(row=3, column=0)
 
+        query = "SELECT utilisateur, description, statut FROM reclamations"
+        cursor = self.db_connection.execute(query)
 
-        Window.BTNMeusure = customtkinter.CTkButton(Window)
-        Window.BTNMeusure.place(relx=0.09459, rely=0.327, height=30, width=110)
-        Window.BTNMeusure.configure(text="Mesures")
-        Window.BTNMeusure.configure(command=Mesure)
+        for row in cursor:
+            tree.insert("", "end", values=row)
 
+    def add_complaint(self, tree):
+        utilisateur = simpledialog.askstring("Utilisateur", "Entrez l'utilisateur:")
+        description = simpledialog.askstring("Description", "Entrez la description:")
+        statut = simpledialog.askstring("Statut", "Entrez le statut:")
 
+        if utilisateur and description and statut:
+            query = f"INSERT INTO reclamations (utilisateur, description, statut) VALUES ('{utilisateur}', '{description}', '{statut}')"
+            self.db_connection.execute(query)
+            self.db_connection.commit()
+            messagebox.showinfo("Succès", "La réclamation a été ajoutée avec succès.")
+            tree.insert("", "end", values=(utilisateur, description, statut))
+        else:
+            messagebox.showerror("Erreur", "Veuillez remplir tous les champs.")
 
-        Window.BTNMaintenance = customtkinter.CTkButton(Window)
-        Window.BTNMaintenance.place(relx=0.09459, rely=0.427, height=30, width=110)
-        Window.BTNMaintenance.configure(text="Maintenance")
-        Window.BTNMaintenance.configure(command=Maintenance)
+    def delete_rows(self, tree):
+        selected_items = tree.selection()
 
+        if not selected_items:
+            messagebox.showerror("Erreur", "Veuillez sélectionner au moins une réclamation à supprimer.")
+            return
 
-        Window.bind("<Configure>", resize_image)
-        Window.mainloop()
+        confirmation = messagebox.askquestion("Confirmation",
+                                              "Voulez-vous vraiment supprimer les réclamations sélectionnées ?")
 
-    main(self=True)
+        if confirmation == "yes":
+            for item in selected_items:
+                item_id = tree.item(item)["values"][0]
+                query = f"DELETE FROM reclamations WHERE id = {item_id}"
+                self.db_connection.execute(query)
+                tree.delete(item)
 
+            self.db_connection.commit()
+            messagebox.showinfo("Succès", "Les réclamations sélectionnées ont été supprimées avec succès.")
+
+    def on_closing(self):
+        if messagebox.askokcancel("Quitter", "Êtes-vous sûr de vouloir quitter ?"):
+            self.db_connection.close()
+            self.destroy()
+
+    def change_appearance_mode(self, new_appearance_mode: str):
+        customtkinter.set_appearance_mode(new_appearance_mode)
+
+    def change_scaling(self, new_scaling: str):
+        new_scaling_float = int(new_scaling.replace("%", "")) / 100
+        customtkinter.set_spacing_scaling(new_scaling_float)
+        customtkinter.set_widget_scaling(new_scaling_float)
+
+if __name__ == "__main__":
+    technicien = Technicien()
+    technicien.mainloop()
