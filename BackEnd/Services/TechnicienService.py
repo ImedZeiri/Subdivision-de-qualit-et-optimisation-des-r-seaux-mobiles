@@ -30,6 +30,11 @@ class TechnicienService:
         data = self.c.fetchall()
         return data
 
+    def insert_reclamation(self, id, utilisateur, description, statut):
+        query = "INSERT INTO reclamations (id, utilisateur, description, statut) VALUES (?, ?, ?, ?)"
+        self.c.execute(query, (id, utilisateur, description, statut))
+        self.con.commit()
+
     def update_record(self,name,age,gender,mail,password,pid):
         Role="Technicien"
         sql="""
